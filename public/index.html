@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>Chat</title>
+    <link rel='stylesheet'href='stylesheets/style.css'/>
+</head>
+<body>
+<div id='content'>
+    <div id='room'></div>
+    <div id='room-list'></div>
+    <div id='messages'></div>
+    <form id='send-form'>
+        <input id='send-message'/>
+        <input id='send-button' type='submit' value='Send'/>
+
+        <div id='help'>
+            Chatcommands:
+            <ul>
+                <li>Changenickname:<code>/nick[username]</code></li>
+                <li>Join/createroom:<code>/join[room name]</code></li>
+            </ul>
+        </div>
+    </form>
+</div>
+<script src='bower_components/socket.io-client/socket.io.js' type='text/javascript'></script>
+<script src='http://code.jquery.com/jquery-1.8.0.min.js' type='text/javascript'></script>
+<script src='javascripts/chat.js' type='text/javascript'></script>
+<script src='javascripts/chat_ui.js' type='text/javascript'></script>
+</body>
+</html>

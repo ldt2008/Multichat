@@ -1,0 +1,72 @@
+#!/usr/bin/env node
+var debug = require('debug')('generated-express-app');
+var http = require('http');
+var path = require('path');
+var app = require('../app');
+var chatServer= require('../lib/chat_server');
+var fs = require('fs');
+var mime = require('mime');
+var cache= {};
+
+
+
+function send404(response){
+    response.writeHead(404,{'Content-Type':'text/plain'});
+    response.write('Error404:resourcenot found.');
+    response.end();
+}
+function sendFile(response,filePath,fileContents) {
+    response.writeHead(
+        200,
+        {"content-type":mime.lookup(path.basename(filePath))}
+    );
+    response.end(fileContents);
+};
+function serveStatic(response,cache,absPath) {
+    if(cache[absPath]){
+        sendFile(response,absPath,cache[absPath]);
+    } else{
+        fs.exists(absPath,function(exists){
+            if(exists){
+                fs.readFile(absPath,function(err,data) {
+                    if(err){
+                        send404(response);
+                    } else{
+                        cache[absPath]= data;
+                        sendFile(response,absPath,data);
+                    }
+                });
+            }else{
+                send404(response);
+            }
+        });
+    }
+};
+
+//app.set('port', process.env.PORT || 3000);
+
+/*
+var server = app.listen(app.get('port'), function() {
+    debug('Express server listening on port ' + server.address().port);
+});
+*/
+
+
+var server = http.createServer(function(request,response)  {
+  debug('Express server listening on port ' + server.address().port);
+    var filePath= false;
+    if(request.url=='/'){
+        filePath= 'public/index.html';
+    } else{
+        filePath= 'public'+ request.url;
+    }
+    var absPath= './'+ filePath;
+    serveStatic(response,cache,absPath);
+});
+
+
+server.listen(3000,function(){
+    console.log("Serverlisteningon port 3000.");
+});
+
+chatServer.listen(server);
